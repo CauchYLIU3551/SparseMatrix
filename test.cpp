@@ -3,11 +3,12 @@
 
 #include <iostream>
 #include <sparsematrix.h>
+#include<JacobiSolver.h>
 
 int main()
 {
     std::vector<int> n,c;
-    std::vector<double> v, x(4, 1);
+    std::vector<double> v, x = {1,2,3,4};//there is a little problem in multiply!!
  
     n = { 0,2,4,7,9 };
     c = { 0,1,1,2,0,2,3,1,3 };
@@ -24,50 +25,33 @@ int main()
     v = { 10,-2,3,9,3,7,8,7,3,8,7,5,8,9,9,13,4,2,-1 };
     sparsematrix A(n, c, v);
 
-    sparsematrix L,U;
-    C.showmatrix();
-    L = C.lowtri();
-    L.showmatrix();
-
-    L.show_indice();
-    L.show_offset();
-    L.show_value();
-
-    U = C.uppertri();
-    U.showmatrix();
-
-    U.show_indice();
-    U.show_offset();
-    U.show_value();
-   
-
     /*
     A.showmatrix();
 
     A.show_indice();
     A.show_offset();
-    A.show_value();
-
-    std::cout << "this is the test of the getting diagnal function!\n";
-    A = A.diag();
-    A.showmatrix();
-    A.show_offset();
-    A.show_indice();
-    A.show_value();
-    B.showmatrix();
-    B.show_indice();
-    C.showmatrix();  
+    A.show_value();    
+    */
 
 
+    //std::cout << "this is the test of the getting diagnal function!\n";
+    //A = A.diag();
+    //A.showmatrix();
+    //A.show_offset();
+    //A.show_indice();
+    //A.show_value();
+    //B.showmatrix();
+    //B.show_indice();
+    //C.showmatrix();
 
-    std::cout << "this is the test of the add function!\n";
+    //std::cout << "this is the test of the add function!\n";
 
-    B=sparsematrix::add(B, C);
+    //B=sparsematrix::add(B, C);
 
-    B.show_indice();
-    B.show_offset();
-    B.show_value();
-    B.showmatrix();
+    //B.show_indice();
+    //B.show_offset();
+    //B.show_value();
+    //B.showmatrix();
 
     //A.showmatrix();
     //B.showmatrix();
@@ -78,31 +62,41 @@ int main()
     C.show_offset();
     C.show_value();
 
-    
+    /*
     std::cout << "After transpose!\n";
     A = C.transpose();
     A.showmatrix();
 
     A.show_indice();
     A.show_offset();
-    A.show_value();
+    A.show_value();    
+    */
+
 
     std::cout << "This is the multiply of the sparse matrix!!\n";
 
-    x=A.multiply(x);
+    x=C.multiply(x);
     for (int i = 0; i < x.size(); i++)
     {
     std::cout << x[i] << " ";
     } 
     
-    std::cout << "this is the test of the getting diagnal function!\n";
-    A = C.diag();
-    A.showmatrix();
-    A.show_offset();
-    A.show_indice();
-    A.show_value();
-    */
+    //std::cout << "this is the test of the getting diagnal function!\n";
+    //A = C.diag();
+    //A.showmatrix();
+    //A.show_offset();
+    //A.show_indice();
+    //A.show_value();
+    n = { 0,3,6,9 };
+    c = { 0,1,2,0,1,2,0,1,2 };
+    v = { 10,-1,-2,-1,10,-2,-1,-1,5 };
+    sparsematrix E(n, c, v);
+    E.showmatrix();
+    
+    std::vector<double>b={72,83,42};
 
+    jacobisolver sol(E);
+    sol.solve(b, 0.0001);
 
 
 }

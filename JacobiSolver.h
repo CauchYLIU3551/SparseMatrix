@@ -11,11 +11,13 @@ class jacobisolver
 {
 public:
 	typedef sparsematrix matrix;
-private:
 	jacobisolver();//default constructor;
-	jacobisolver(matrix A);
-	void solve(std::vector<double> b);
+	jacobisolver(matrix a);
+	std::vector<double> solve(std::vector<double> b, double eps);
 	void GaussSidel();// unfinished function and it will be completed at next step.
+private:
+	matrix A;
+	//double eps;
 };
 
 

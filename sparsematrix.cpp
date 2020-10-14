@@ -71,7 +71,7 @@ sparsematrix sparsematrix::diag()
 	std::vector<int> r(1,0),Dindice;
 	std::vector<double> Dvalue;
 	int flag = 0;
-	std::cout << col << std::endl;
+	
 	for (int i = 0; i < row; i++)
 	{
 		//std::cout << "this is the " << i << "th times test!!!\n";
@@ -101,6 +101,16 @@ sparsematrix sparsematrix::diag()
 	return D;
 }
 
+//this is a function to get the inverse matrix of the diagnal matrix D of A 
+sparsematrix sparsematrix::diag_inverse()
+{
+	sparsematrix DI = diag();
+	for (int i = 0; i < DI.value.size(); i++)
+	{
+		DI.value[i] = 1.0/DI.value[i];
+	}
+	return DI;
+}
 
 // Need to finish!!!!!!
 // Compute the lower-triangular L;
@@ -149,6 +159,19 @@ sparsematrix sparsematrix::uppertri()
 	}
 	sparsematrix U(r, Uindice, Uvalue, row, col); // here I use the index of row and col index to define the sparse matrix otherwise it will lose the col info.
 	return U;
+}
+
+sparsematrix sparsematrix::inverse_num()
+{
+	std::vector<double> Mvalue;
+	for (int i = 0; i < value.size(); i++)
+	{
+		Mvalue.push_back( -1 * value[i]);
+	}
+	
+	sparsematrix M(rowoffset, indice, Mvalue);
+
+	return M;
 }
 
 ////////////////////////need to finish !
@@ -220,7 +243,7 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 				Cvalue.push_back(B.value[B.rowoffset[i] + k]);
 				k++;
 			}
-			std::cout <<"After that"<< len << std::endl;
+			//std::cout <<"After that"<< len << std::endl;
 			Crow.push_back(Crow[i] + len);
 		}
 
@@ -260,11 +283,16 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 std::vector<double> sparsematrix::multiply(std::vector<double> x)
 {
 	std::vector<double> b(row,0);
+	//std::cout << rowoffset[row]<<std::endl;
+	int num = 0;
 	for (int i = 0; i < row; i++)
 	{
 		for (int j = rowoffset[i]; j < rowoffset[i + 1]; j++)
 		{
-			b[i] += value[j] * x[indice[j]]; //if the indice start from 1, here will change to indice[k]-1
+			//num += 1;
+			//std::cout << "this the No." << num << " times \n";
+			//std::cout << "the operation is ::::" << value[j] << "times" << x[indice[j]] << std::endl;
+			b[i] = b[i] + value[j] * x[indice[j]]; //if the indice start from 1, here will change to indice[k]-1
 		}
 	}
 
@@ -358,4 +386,9 @@ std::vector<double> sparsematrix::show_value()
 	}
 	std::cout << std::endl;
 	return value;
+}
+
+int sparsematrix::show_row()
+{
+	return row;
 }

@@ -20,9 +20,12 @@ public:
 	sparsematrix transpose();
 	sparsematrix inverse();
 	
+	// following functions are designed to solve the implement the Jacobi iteration.
 	sparsematrix diag();
+	sparsematrix diag_inverse();
 	sparsematrix lowtri();
 	sparsematrix uppertri();
+	sparsematrix inverse_num();
 
 	static sparsematrix add(sparsematrix A, sparsematrix B);
 	std::vector<double> multiply(std::vector<double> x);
@@ -30,6 +33,8 @@ public:
 	std::vector<int> show_offset();
 	std::vector<int> show_indice();
 	std::vector<double> show_value();
+
+	int show_row();
 	//std::vector<int> rowoffset;
 	//std::vector<int> indice;
 	//std::vector<double> value;
