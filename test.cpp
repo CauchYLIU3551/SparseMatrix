@@ -3,21 +3,22 @@
 
 #include <iostream>
 #include <sparsematrix.h>
-#include<JacobiSolver.h>
+#include <JacobiSolver.h>
+#include <CGsolver.h>
 
 int main()
 {
-    std::vector<int> n,c;
-    std::vector<double> v, x = {1,2,3,4};//there is a little problem in multiply!!
- 
+    std::vector<int> n, c;
+    std::vector<double> v, x = { 1,2,3,4 };//there is a little problem in multiply!!
+
     n = { 0,2,4,7,9 };
     c = { 0,1,1,2,0,2,3,1,3 };
     v = { 1,7,2,8,5,3,9,6,4 };
     sparsematrix C(n, c, v);
 
     n = { 0,1,3,4,6 };
-    c = { 0,1,3,2,1,3};
-    v = { 1,2,6,3,5,4};
+    c = { 0,1,3,2,1,3 };
+    v = { 1,2,6,3,5,4 };
     sparsematrix B(n, c, v);
 
     n = { 0,2,5,8,12,16,19 };
@@ -27,10 +28,9 @@ int main()
 
     /*
     A.showmatrix();
-
     A.show_indice();
     A.show_offset();
-    A.show_value();    
+    A.show_value();
     */
 
 
@@ -56,7 +56,7 @@ int main()
     //A.showmatrix();
     //B.showmatrix();
 
-    
+
     C.showmatrix();
     C.show_indice();
     C.show_offset();
@@ -66,39 +66,57 @@ int main()
     std::cout << "After transpose!\n";
     A = C.transpose();
     A.showmatrix();
-
     A.show_indice();
     A.show_offset();
-    A.show_value();    
+    A.show_value();
     */
 
 
     std::cout << "This is the multiply of the sparse matrix!!\n";
 
-    x=C.multiply(x);
+    x = C.multiply(x);
     for (int i = 0; i < x.size(); i++)
     {
-    std::cout << x[i] << " ";
-    } 
-    
+        std::cout << x[i] << " ";
+    }
+    std::cout << std::endl;
     //std::cout << "this is the test of the getting diagnal function!\n";
     //A = C.diag();
     //A.showmatrix();
     //A.show_offset();
     //A.show_indice();
     //A.show_value();
-    n = { 0,3,6,9 };
-    c = { 0,1,2,0,1,2,0,1,2 };
-    v = { 10,-1,-2,-1,10,-2,-1,-1,5 };
+    //n = { 0,3,6,9 };
+    //c = { 0,1,2,0,1,2,0,1,2 };
+    //v = { 10,-1,-2,-1,10,-2,-1,-1,5 };
+    //sparsematrix E(n, c, v);
+    //E.showmatrix();
+
+
+    // here is the test of jacobi iteration;
+    //std::vector<double>b = { 72,83,42 };
+
+
+    //jacobisolver sol(E);
+    //sol.solve(b, 0.0001);
+
+    n = { 0,2,5,7 };
+    c = { 0,1,0,1,2,1,2 };
+    v = { 2,-1,-1,2,-1,-1,2 };
     sparsematrix E(n, c, v);
     E.showmatrix();
+    std::vector<double> x0(3, 0), b = {1,0,1.8};
+    CGsolver sol2(E);
+    x0 = sol2.solve(x0, b, 0.001);
     
-    std::vector<double>b={72,83,42};
+    for (int i = 0; i < x0.size(); i++)
+    {
+        std::cout << x0[i] << " ";
+    }
+    std::cout << std::endl;
 
-    jacobisolver sol(E);
-    sol.solve(b, 0.0001);
 
-
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
