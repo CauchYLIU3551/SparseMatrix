@@ -12,7 +12,7 @@
 class CGsolver
 {
 public:
-	std::vector<double> solve(std::vector<double> x0,std::vector<double> b,double eps);
+	std::vector<double> solve(std::vector<double> x0, std::vector<double> b, double eps);
 	CGsolver();
 	CGsolver(sparsematrix a);
 private:

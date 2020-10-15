@@ -73,7 +73,7 @@ double trans_multiply(std::vector<double> a, std::vector<double>b)
 	}
 	else
 	{
-		int sum = 0;
+		double sum = 0;
 		for (int i = 0; i < len; i++)
 		{
 			sum += a[i] * b[i];
@@ -91,7 +91,7 @@ std::vector<double> num_multiply(double arg1, std::vector<double>b)
 	return b;
 }
 
-std::vector<double> CGsolver::solve(std::vector<double> x0, std::vector<double> b,double eps)
+std::vector<double> CGsolver::solve(std::vector<double> x0, std::vector<double> b, double eps)
 {
 	std::vector<double> r, r0, p;
 	r0 = vector_minus(b, A.multiply(x0));
@@ -102,29 +102,25 @@ std::vector<double> CGsolver::solve(std::vector<double> x0, std::vector<double> 
 
 	while (k <= Max)
 	{
-		std::cout << "this is the k times test!" << k << "\n";
-		std::cout << "the frobenis error is " << frobenis(r0);
-		if (frobenis(r0) <eps)
+		//std::cout << "this is the k times test!" << k << "\n";
+		//std::cout << "the frobenis error is " << frobenis(r0);
+		if (frobenis(r0) < eps)
 		{
 			return x0;
 		}
 		else
 		{
 			//here is a little problem that we can get 1 correct ans at the first step, but lose the control after that.
-			alpha=trans_multiply(r0, r0)/trans_multiply(p,A.multiply(p));
+			alpha = trans_multiply(r0, r0) / trans_multiply(p, A.multiply(p));
 			//std::cout << "Check point 1\n";
 			x0 = vector_add2(x0, num_multiply(alpha, p));
+			
 			//std::cout << "Check point 2\n";
 			r = vector_minus(r0, num_multiply(alpha, A.multiply(p)));
 			//std::cout << "Check point 3\n";
 			beta = trans_multiply(r, r) / trans_multiply(r0, r0);
-			p = vector_add2(r,num_multiply(beta, p));
+			p = vector_add2(r, num_multiply(beta, p));
 			r0 = r;
-			for (int i = 0; i < x0.size(); i++)
-			{
-				std::cout << x0[i] << " ";
-			}
-			std::cout << std::endl;
 		}
 		k++;
 	}
