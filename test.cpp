@@ -16,6 +16,16 @@ int main()
     v = { 1,7,2,8,5,3,9,6,4 };
     sparsematrix C(n, c, v);
 
+    n = { 0,2,4,7,9 };
+    c = { 0,1,1,2,0,2,3,1,3 };
+    v = { 1,-7,2,8,5,3,9,6,4 };
+    sparsematrix D(n, c, v);
+    C.showmatrix();
+    D.showmatrix();
+    D = sparsematrix::add(C, D);
+    D.showmatrix();
+
+
     n = { 0,1,3,4,6 };
     c = { 0,1,3,2,1,3 };
     v = { 1,2,6,3,5,4 };
@@ -69,7 +79,7 @@ int main()
     A.show_indice();
     A.show_offset();
     A.show_value();
-    */
+
 
 
     std::cout << "This is the multiply of the sparse matrix!!\n";
@@ -80,6 +90,7 @@ int main()
         std::cout << x[i] << " ";
     }
     std::cout << std::endl;
+        */
     //std::cout << "this is the test of the getting diagnal function!\n";
     //A = C.diag();
     //A.showmatrix();
@@ -100,6 +111,7 @@ int main()
     //jacobisolver sol(E);
     //sol.solve(b, 0.0001);
 
+    /*
     n = { 0,2,5,7 };
     c = { 0,1,0,1,2,1,2 };
     v = { 2,-1,-1,2,-1,-1,2 };
@@ -113,7 +125,9 @@ int main()
     {
         std::cout << x0[i] << " ";
     }
-    std::cout << std::endl;
+    std::cout << std::endl;    
+    */
+
 
 
     return 0;

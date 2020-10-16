@@ -2,7 +2,7 @@
 
 
 // default construction function without input;
-sparsematrix::sparsematrix():rowoffset({ 0 ,0 }), indice({ 0 }), value({ 0 })
+sparsematrix::sparsematrix() :rowoffset({ 0 ,0 }), indice({ 0 }), value({ 0 })
 {
 	col = max();
 	row = 1;
@@ -35,7 +35,7 @@ sparsematrix sparsematrix::transpose()
 
 	for (int j = 0; j < col; j++)
 	{
-		
+
 		for (int i = 0; i < indice.size(); i++)
 		{
 			if (indice[i] == j) //if the indice start from 1, here will change to indice[k]-1
@@ -58,7 +58,7 @@ sparsematrix sparsematrix::transpose()
 		n.push_back(num);
 	}
 
-	sparsematrix A(n,c,v);
+	sparsematrix A(n, c, v);
 
 	return A;
 }
@@ -68,10 +68,10 @@ sparsematrix sparsematrix::transpose()
 // we can divide the matrix in this way: A=D-L-U; D is diagnal matrix, L is lower-triangular matrix, U is upper-triangular matrix;
 sparsematrix sparsematrix::diag()
 {
-	std::vector<int> r(1,0),Dindice;
+	std::vector<int> r(1, 0), Dindice;
 	std::vector<double> Dvalue;
 	int flag = 0;
-	
+
 	for (int i = 0; i < row; i++)
 	{
 		//std::cout << "this is the " << i << "th times test!!!\n";
@@ -82,7 +82,7 @@ sparsematrix sparsematrix::diag()
 			{
 				Dindice.push_back(indice[j]);
 				Dvalue.push_back(value[j]);
-				r.push_back(i+1);
+				r.push_back(i + 1);
 				flag = 1;
 				break;
 			}
@@ -96,8 +96,8 @@ sparsematrix sparsematrix::diag()
 
 	}
 
-	sparsematrix D(r,Dindice,Dvalue);
-	
+	sparsematrix D(r, Dindice, Dvalue);
+
 	return D;
 }
 
@@ -107,7 +107,7 @@ sparsematrix sparsematrix::diag_inverse()
 	sparsematrix DI = diag();
 	for (int i = 0; i < DI.value.size(); i++)
 	{
-		DI.value[i] = 1.0/DI.value[i];
+		DI.value[i] = 1.0 / DI.value[i];
 	}
 	return DI;
 }
@@ -166,9 +166,9 @@ sparsematrix sparsematrix::inverse_num()
 	std::vector<double> Mvalue;
 	for (int i = 0; i < value.size(); i++)
 	{
-		Mvalue.push_back( -1 * value[i]);
+		Mvalue.push_back(-1 * value[i]);
 	}
-	
+
 	sparsematrix M(rowoffset, indice, Mvalue);
 
 	return M;
@@ -186,7 +186,7 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 	std::vector<double> Cvalue;
 	std::vector<int>Cind, Crow;
 	Crow.push_back(0);
-	
+
 	if (A.row == B.row && A.col == B.col)
 	{
 		for (int i = 0; i < A.row; i++)
@@ -205,9 +205,9 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 
 			int j = 0, k = 0;
 
-			while (j<len1&&k<len2)//there is a problem!
+			while (j < len1 && k < len2)//there is a problem!
 			{
-				if (A.indice[A.rowoffset[i]+j] < B.indice[B.rowoffset[i]+k])
+				if (A.indice[A.rowoffset[i] + j] < B.indice[B.rowoffset[i] + k])
 				{
 					Cind.push_back(A.indice[A.rowoffset[i] + j]);
 					Cvalue.push_back(A.value[A.rowoffset[i] + j]);
@@ -221,14 +221,24 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 				}
 				else
 				{
-					Cind.push_back(A.indice[A.rowoffset[i] + j]);
-					Cvalue.push_back(A.value[A.rowoffset[i] + j] + B.value[B.rowoffset[i] + k]);
-					len = len - 1;
-					//std::cout << "ATTENTION!\n";
-					//std::cout << A.indice[A.rowoffset[i] + j] << std::endl;
-					//std::cout << B.indice[B.rowoffset[i] + k] << std::endl;
-					j++;
-					k++;
+					if (A.value[A.rowoffset[i] + j] + B.value[B.rowoffset[i] + k] != 0)
+					{
+						Cind.push_back(A.indice[A.rowoffset[i] + j]);
+						Cvalue.push_back(A.value[A.rowoffset[i] + j] + B.value[B.rowoffset[i] + k]);
+						len = len - 1;
+						//std::cout << "ATTENTION!\n";
+						//std::cout << A.indice[A.rowoffset[i] + j] << std::endl;
+						//std::cout << B.indice[B.rowoffset[i] + k] << std::endl;
+						j++;
+						k++;
+					}
+					else
+					{
+						len = len - 2;
+						j++;
+						k++;
+					}
+
 				}
 			}
 			while (j < len1)
@@ -253,13 +263,11 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 			std::cout << Crow[i] << " ";
 		}
 		std::cout << std::endl;
-
 		for (int i = 0; i < Cind.size(); i++)
 		{
 			std::cout << Cind[i] << " ";
 		}
 		std::cout << std::endl;
-
 		for (int i = 0; i < Cvalue.size(); i++)
 		{
 			std::cout << Cvalue[i] << " ";
@@ -268,7 +276,7 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 		*/
 
 		sparsematrix C(Crow, Cind, Cvalue);
-		
+
 		return C;
 	}
 	else
@@ -276,13 +284,13 @@ sparsematrix sparsematrix::add(sparsematrix A, sparsematrix B)
 		std::cout << "Function add() ERROR:The two matrixes are not in same size! Please check it!\n";
 	}
 }
- 
+
 
 
 // compute the value of the sparsematrix times a n-dimensional vector x.
 std::vector<double> sparsematrix::multiply(std::vector<double> x)
 {
-	std::vector<double> b(row,0);
+	std::vector<double> b(row, 0);
 	//std::cout << rowoffset[row]<<std::endl;
 	int num = 0;
 	for (int i = 0; i < row; i++)
@@ -354,7 +362,7 @@ int sparsematrix::max()
 		if (indice[i] >= num)
 			num = indice[i];
 	}
-	return num+1;
+	return num + 1;
 };
 
 std::vector<int> sparsematrix::show_offset()
