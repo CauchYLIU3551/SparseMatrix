@@ -13,6 +13,7 @@
 #include <AFEPack/Functional.h>
 #include <AFEPack/EasyMesh.h>
 #include <sparse/sparsematrix.h>
+#include <sparse/JacobiSolver.h>
 
 #define PI (4.0*atan(1.0))
 
@@ -23,10 +24,6 @@ int main(int argc, char * argv[])
 {
   EasyMesh mesh;
   mesh.readData(argv[1]);
-
-
-  sparsematrix A;
-
 
   TemplateGeometry<2>	triangle_template_geometry;
   triangle_template_geometry.readData("triangle.tmp_geo");
@@ -83,11 +80,11 @@ int main(int argc, char * argv[])
 
   const SparseMatrixIterators::Iterator<double,true> e=stiff_matrix.end();
   
-  std::vector<int> row(stiff_matrix.n()+1);
+  std::vector<int> row(stiff_matrix.n()+1),col;
   row[0]=0;
   int num1=stiff_matrix.n_nonzero_elements();//get the number of nonzero element in stiff_matrix;
   //std::vector<double> col(num1),val(num1); 
-  std::vector<double> col,val; 
+  std::vector<double> val; 
   // Produce the col_indice and value vector with the same size as the num1;
   // Save the col_indice and value in these two vectors to produce a sparse
   // matrix defined by myself.
@@ -102,14 +99,21 @@ int main(int argc, char * argv[])
   {
 	  row[j]=stiff_matrix.get_row_length(j-1)+row[j-1];
   }
-  std::cout<<"The last element of row:::"<<row[row.size()-1]<<"\n"; 
-  std::cout<<"This is the rowlen of the 1st row"<<stiff_matrix.get_row_length(0)<<"\n";
+  sparsematrix A(row,col,val);
+
+  //std::cout<<"The last element of row:::"<<row[row.size()-1]<<"\n"; 
+  //std::cout<<"This is the rowlen of the 1st row"<<stiff_matrix.get_row_length(0)<<"\n";
   //std::ofstream out ("sparsity_pattern.1");
   //sparse.print_gnuplot (out);
   //std::ofstream out ("sparsity_pattern.2");
   //sparse.print (out);
-
-
+  jacobisolver solve_2(A);
+  std::vector<double> sol2;
+  //here are some problems that the solution and right_hand_side are 
+  //datatype dealii::Vector<double,2>;
+  sol2=solve_2.solve(solution,right_hand_side,1.0e-08);
+  sol2.writeOpenDXData("u2.dx");
+  
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
 
@@ -117,7 +121,7 @@ int main(int argc, char * argv[])
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
   std::cerr << "\nL2 error = " << error << std::endl;
 
-  A.showmatrix();
+  //A.showmatrix();
 
   return 0;
 };

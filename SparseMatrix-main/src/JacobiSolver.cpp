@@ -63,7 +63,7 @@ void showvector(std::vector<double> A)
 	std::cout << "\n";
 }
 
-std::vector<double> jacobisolver::solve(std::vector<double>b, double eps)
+std::vector<double> jacobisolver::solve(std::vector<double>x,std::vector<double>b, double eps)
 {
 	sparsematrix DI, L, U;
 	DI = A.diag_inverse();
@@ -76,19 +76,19 @@ std::vector<double> jacobisolver::solve(std::vector<double>b, double eps)
 	//M.showmatrix();
 
 	int dim = A.show_row();
-	std::vector<double> x(dim, 1), x0;
+	std::vector<double> x0;
 
 	do
 	{
-		x0 = x;
+		x0=x;
 		x = vector_add(DI.multiply(M.multiply(x0)), DI.multiply(b));
 	} while (frobenis(x, x0) > eps);
 
-	std::cout << "The answer is that:::\n";
-	for (int i = 0; i < x.size(); i++)
-	{
-		std::cout << x[i] << " ";
-	}
-	std::cout << "\n";
+//	std::cout << "The answer is that:::\n";
+//	for (int i = 0; i < x.size(); i++)
+//	{
+//		std::cout << x[i] << " ";
+//	}
+//	std::cout << "\n";
 	return x;
 }

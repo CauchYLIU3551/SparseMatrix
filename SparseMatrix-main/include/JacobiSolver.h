@@ -13,7 +13,7 @@ public:
 	typedef sparsematrix matrix;
 	jacobisolver();//default constructor;
 	jacobisolver(matrix a);
-	std::vector<double> solve(std::vector<double> b, double eps);
+	std::vector<double> solve(std::vector<double>x,std::vector<double> b, double eps);
 	void GaussSidel();// unfinished function and it will be completed at next step.
 private:
 	matrix A;

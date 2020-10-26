@@ -21,9 +21,9 @@ int main()
     v = { 1,-7,2,8,5,3,9,6,4 };
     sparsematrix D(n, c, v);
     C.showmatrix();
-    D.showmatrix();
+    //D.showmatrix();
     D = sparsematrix::add(C, D);
-    D.showmatrix();
+    //D.showmatrix();
 
 
     n = { 0,1,3,4,6 };
@@ -66,13 +66,13 @@ int main()
     //A.showmatrix();
     //B.showmatrix();
 
-
+    /*
     C.showmatrix();
     C.show_indice();
     C.show_offset();
     C.show_value();
 
-    /*
+    
     std::cout << "After transpose!\n";
     A = C.transpose();
     A.showmatrix();
@@ -105,20 +105,29 @@ int main()
 
 
     // here is the test of jacobi iteration;
-    //std::vector<double>b = { 72,83,42 };
+    //std::vector<double>b = { 72,83,42 }, x2(3,1);
 
 
     //jacobisolver sol(E);
-    //sol.solve(b, 0.0001);
+    //x.swap(sol.solve(x2, b, 0.0001));
 
-    /*
+    
     n = { 0,2,5,7 };
     c = { 0,1,0,1,2,1,2 };
     v = { 2,-1,-1,2,-1,-1,2 };
     sparsematrix E(n, c, v);
     E.showmatrix();
     std::vector<double> x0(3, 0), b = {1,0,1.8};
-    CGsolver sol2(E);
+    jacobisolver sol(E);
+    x0=sol.solve(x0, b, 0.0001);
+
+    for (int i = 0; i < x0.size(); i++)
+    {
+        std::cout << x0[i] << " ";
+    }
+    std::cout << std::endl;
+
+    /*CGsolver sol2(E);
     x0 = sol2.solve(x0, b, 0.001);
     
     for (int i = 0; i < x0.size(); i++)
