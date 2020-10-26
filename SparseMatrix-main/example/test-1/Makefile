@@ -5,8 +5,8 @@ include /usr/local/AFEPack/Make.global_options
 source = $(wildcard *.cpp)
 object = $(patsubst %.cpp, %.o, $(source))
 LDFLAGS += -L/usr/local/AFEPack/library/lib -lAFEPack
-CXXFLAGS += -I /home/chengyuliu/SparseMatrix/SparseMatrix-main/include/
-LIBS += -lsparse -L /home/chengyuliu/SparseMatrix/SparseMatrix-main/lib/
+CXXFLAGS += -I /home/cyliu/SparseMatrix/SparseMatrix-main/include/
+LIBS += -lsparse -L /home/cyliu/SparseMatrix/SparseMatrix-main/lib/
 
 all : main
 

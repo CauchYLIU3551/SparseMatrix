@@ -107,15 +107,54 @@ int main(int argc, char * argv[])
   //sparse.print_gnuplot (out);
   //std::ofstream out ("sparsity_pattern.2");
   //sparse.print (out);
+  
+  /////////////
+  //following are the process to solve the equations!
   jacobisolver solve_2(A);
-  std::vector<double> sol2;
+  std::vector<double> sol2,b;
+  // here are commands to copy the elements from solution and right** to sol2
+  // and b;
+  
+  for(int k=0;k<solution.size();k++)
+  {
+	  sol2.push_back(solution[k]);
+	  b.push_back(right_hand_side[k]);
+  }
+
   //here are some problems that the solution and right_hand_side are 
   //datatype dealii::Vector<double,2>;
-  sol2=solve_2.solve(solution,right_hand_side,1.0e-08);
-  sol2.writeOpenDXData("u2.dx");
+  
+
+  //following are commands to print all the elements in solution;
+  //std::cout<<"this is the size of the solution:::"<<solution.size()<<"\n"; 
+  //std::ofstream out("solution");
+  //solution.print(out);
+
+
+  //std::cout<<"this is the size of the right_hand_side:::"<<right_hand_side.size()<<"\n"; 
+
+  //std::ofstream out("right_hand_side");
+  //right_hand_side.print(out);
+  sol2=solve_2.solve(sol2,b,1.0e-08);
+  //sol2.writeOpenDXData("u2.dx");
   
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
+  // Notes: solution inherits from dealii::Vector<double>, So it can be computed
+  // as a Vector<double> object in AMGSolver::solver; But in error compute it is
+  // used as a FEMFunction<double,2> object, So I need to use some commands to 
+  // convert the result vector<double>sol2 into AFEPack::FEMFunction<double,2>
+  // solution. Then use the solution to complete the error computing.
+  //
+  // Unfinished target: understanding the commands in FEMFunction.h and 
+  // AMGSolver.h. After that replace the classes from deal.ii by some DIY class.
+
+
+  //std::cout<<"this is the size of the solution:::"<<solution.size()<<"\n";
+  //std::ofstream out("solution_after");
+  //solution.print(out);
+  
+  // The class FunctionFunction is defined in Miscellaneous.h
 
   solution.writeOpenDXData("u.dx");
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
