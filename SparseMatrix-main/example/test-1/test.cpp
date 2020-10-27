@@ -51,6 +51,8 @@ int main(int argc, char * argv[])
   fem_space.buildDof();
   fem_space.buildDofBoundaryMark();
 
+  // Maybe I can have a try to replace the sparse matrix in StiffMatrix class
+  // instead of in the process of solving the equations.
   StiffMatrix<2,double> stiff_matrix(fem_space);
   stiff_matrix.algebricAccuracy() = 4;
   stiff_matrix.build();
@@ -155,6 +157,14 @@ int main(int argc, char * argv[])
   //solution.print(out);
   
   // The class FunctionFunction is defined in Miscellaneous.h
+
+  double err=0;
+  for(int k=0;k<sol2.size();k++)
+  {
+	  err+=abs(sol2[k]-solution[k]);
+  }
+  err=sqrt(err);
+  std::cout<<"The error between sol2 and the solution::::"<<err<<std::endl;
 
   solution.writeOpenDXData("u.dx");
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
