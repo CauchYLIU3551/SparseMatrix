@@ -1,10 +1,10 @@
 # by R.Lie, Nov 01, 2002
 
-include /usr/local/AFEPack/Make.global_options
+include /home/cyliu/AFEPack/Make.global_options
 
 source = $(wildcard *.cpp)
 object = $(patsubst %.cpp, %.o, $(source))
-LDFLAGS += -L/usr/local/AFEPack/library/lib -lAFEPack
+LDFLAGS += -L/home/cyliu/AFEPack/library/lib -lAFEPack
 CXXFLAGS += -I /home/cyliu/SparseMatrix/SparseMatrix-main/include/
 LIBS += -lsparse -L /home/cyliu/SparseMatrix/SparseMatrix-main/lib/
 

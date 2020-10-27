@@ -40,6 +40,8 @@ int main(int argc, char * argv[])
 			     triangle_coord_transform,
 			     triangle_basis_function);
 
+  //using FEMSpace to define a fem_space object with the data from mesh and 
+  //template_element which are defined by the above commands;
   FEMSpace<double,2> fem_space(mesh, template_element);
 	
   int n_element = mesh.n_geometry(2);
@@ -53,6 +55,9 @@ int main(int argc, char * argv[])
 
   // Maybe I can have a try to replace the sparse matrix in StiffMatrix class
   // instead of in the process of solving the equations.
+  // StiffMatrix class inherits BilinearOperator class; while BilinearOperator
+  // class inherits SparseMatrix
+  
   StiffMatrix<2,double> stiff_matrix(fem_space);
   stiff_matrix.algebricAccuracy() = 4;
   stiff_matrix.build();
@@ -142,6 +147,14 @@ int main(int argc, char * argv[])
   
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
+  
+  std::freopen("sol2","w",stdout);
+  for(int k=0;k<sol2.size();k++)
+  {
+	  std::cout<<sol2[k]<<" ";
+  }
+  fclose(stdout);
+  
   // Notes: solution inherits from dealii::Vector<double>, So it can be computed
   // as a Vector<double> object in AMGSolver::solver; But in error compute it is
   // used as a FEMFunction<double,2> object, So I need to use some commands to 
@@ -158,16 +171,26 @@ int main(int argc, char * argv[])
   
   // The class FunctionFunction is defined in Miscellaneous.h
 
-  double err=0;
+  double err=0,max=0;
   for(int k=0;k<sol2.size();k++)
   {
-	  err+=abs(sol2[k]-solution[k]);
+	  if(err<abs(sol2[k]-solution[k]))
+	  {
+		  err=abs(sol2[k]-solution[k]);
+	  }
+	  if(max<solution[k])
+	  {
+		  max=solution[k];
+	  }
   }
-  err=sqrt(err);
+  err=err/max;
   std::cout<<"The error between sol2 and the solution::::"<<err<<std::endl;
 
   solution.writeOpenDXData("u.dx");
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
+  // L2Error is defined in Functional.h and .template.h; The FunctionFunction is
+  // defined in Miscellaneous.h; 
+  // L2Error(FEMFunction<value_type, DIM>& f, const Function<value_type>& f1, int algebric_accuracy)
   std::cerr << "\nL2 error = " << error << std::endl;
 
   //A.showmatrix();
