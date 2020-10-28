@@ -14,6 +14,7 @@
 #include <AFEPack/EasyMesh.h>
 #include <sparse/sparsematrix.h>
 #include <sparse/JacobiSolver.h>
+#include <sparse/CGsolver.h>
 
 #define PI (4.0*atan(1.0))
 
@@ -118,13 +119,14 @@ int main(int argc, char * argv[])
   /////////////
   //following are the process to solve the equations!
   jacobisolver solve_2(A);
-  std::vector<double> sol2,b;
+  std::vector<double> sol2,sol3,b;
   // here are commands to copy the elements from solution and right** to sol2
   // and b;
   
   for(int k=0;k<solution.size();k++)
   {
 	  sol2.push_back(solution[k]);
+	  sol3.push_back(solution[k]);
 	  b.push_back(right_hand_side[k]);
   }
 
@@ -144,17 +146,22 @@ int main(int argc, char * argv[])
   //right_hand_side.print(out);
   sol2=solve_2.solve(sol2,b,1.0e-08);
   //sol2.writeOpenDXData("u2.dx");
+  CGsolver solve_3(A);
+  sol3=solve_3.solve(sol3,b,1.0e-08);
   
+
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
-  
-  std::freopen("sol2","w",stdout);
-  for(int k=0;k<sol2.size();k++)
+ 
+  /*
+  std::freopen("sol3","w",stdout);
+  for(int k=0;k<sol3.size();k++)
   {
-	  std::cout<<sol2[k]<<" ";
+	  std::cout<<sol3[k]<<" ";
   }
   fclose(stdout);
-  
+  */
+
   // Notes: solution inherits from dealii::Vector<double>, So it can be computed
   // as a Vector<double> object in AMGSolver::solver; But in error compute it is
   // used as a FEMFunction<double,2> object, So I need to use some commands to 
@@ -186,12 +193,52 @@ int main(int argc, char * argv[])
   err=err/max;
   std::cout<<"The error between sol2 and the solution::::"<<err<<std::endl;
 
+  double err2=0,max2=0;
+  for(int k=0;k<sol3.size();k++)
+  {
+          if(err2<abs(sol3[k]-solution[k]))
+          {
+                  err2=abs(sol3[k]-solution[k]);
+          }
+          if(max2<solution[k])
+          {
+                  max2=solution[k];
+          }
+  }
+  err2=err2/max2;
+  std::cout<<"The error between sol3 and the solution::::"<<err2<<std::endl;
+
+
   solution.writeOpenDXData("u.dx");
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
   // L2Error is defined in Functional.h and .template.h; The FunctionFunction is
   // defined in Miscellaneous.h; 
   // L2Error(FEMFunction<value_type, DIM>& f, const Function<value_type>& f1, int algebric_accuracy)
   std::cerr << "\nL2 error = " << error << std::endl;
+
+
+  // Have a test in FunctionFunction<double>(&u);i
+  //
+  /*
+  double L0err = 0;
+  FEMSpace<double,DIM>& fem_space = solution.femSpace();
+  FEMSpace<double,DIM>::ElementIterator the_element = fem_space.beginElement();
+  FEMSpace<double,DIM>::ElementIterator end_element = fem_space.endElement();
+  for (;the_element != end_element;the_element ++) {
+      double volume = the_element->templateElement().volume();
+      const QuadratureInfo<DIM>& quad_info = the_element->findQuadratureInfo(algebric_accuracy);
+      std::vector<double> jacobian = the_element->local_to_global_jacobian(quad_info.quadraturePoint());
+      int n_quadrature_point = quad_info.n_quadraturePoint();
+      std::vector<Point<DIM> > q_point = the_element->local_to_global(quad_info.quadraturePoint());
+      std::vector<double> f_value = f.value(q_point, *the_element);
+      for (int l = 0;l < n_quadrature_point;l ++) {
+             double df_value = f1.value(q_point[l]) - f_value[l];
+             df_value = fabs(df_value);
+             if (df_value > error) error = df_value;
+      }
+  }
+  */
+
 
   //A.showmatrix();
 
