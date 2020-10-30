@@ -16,10 +16,63 @@
 #include <sparse/JacobiSolver.h>
 #include <sparse/CGsolver.h>
 
+
+#include <typeinfo>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <list>
+#include <iterator>
+#include <algorithm>
+
+#include <base/exceptions.h>
+#include <lac/vector.h>
+#include <lac/sparsity_pattern.h>
+#include <lac/sparse_matrix.h>
+
+#include "AMGSolver.h"
+#include "Geometry.h"
+#include "TemplateElement.h"
+#include "FEMSpace.h"
+#include "HGeometry.h"
+#include "BilinearOperator.h"
+
+
+
 #define PI (4.0*atan(1.0))
+
 
 double u(const double *);
 double f(const double *);
+
+// 
+// Try to edit the error function in the Functional.template.h instead of in different cpp file.
+//
+/*template <class value_type, int DIM>
+value_type EditError(FEMFunction<value_type, DIM>& f, const Function<value_type>& f1, int algebric_accuracy)
+{
+        value_type error = 0;
+        FEMSpace<value_type,DIM>& fem_space = f.femSpace();
+        typename FEMSpace<value_type,DIM>::ElementIterator the_element = fem_space.beginElement();
+        typename FEMSpace<value_type,DIM>::ElementIterator end_element = fem_space.endElement();
+        for (;the_element != end_element;the_element ++) {
+                double volume = the_element->templateElement().volume();
+                const QuadratureInfo<DIM>& quad_info = the_element->findQuadratureInfo(algebric_accuracy);
+                std::vector<double> jacobian = the_element->local_to_global_jacobian(quad_info.quadraturePoint());
+                int n_quadrature_point = quad_info.n_quadraturePoint();
+                std::vector<Point<DIM> > q_point = the_element->local_to_global(quad_info.quadraturePoint());
+                std::vector<double> f_value = f.value(q_point, *the_element);
+                for (int l = 0;l < n_quadrature_point;l ++) {
+                        double df_value = f1.value(q_point[l]) - f_value[l];
+                        df_value = fabs(df_value);
+                        if (df_value > error) error = df_value;
+                }
+        }
+        return error;
+};
+*/
+
 
 int main(int argc, char * argv[])
 {
@@ -46,10 +99,18 @@ int main(int argc, char * argv[])
   FEMSpace<double,2> fem_space(mesh, template_element);
 	
   int n_element = mesh.n_geometry(2);
+  //  get the number of elements in FEMSpace and reinit every element in the 
+  //  FEMSpace;
+  //  Make every element is corresponding to 
+  //  the related geometry element images the No.0 template element
+  std::cout<< "number of element::"<<n_element<<"\n";
+
   fem_space.element().resize(n_element);
   for (int i = 0;i < n_element;i ++)
     fem_space.element(i).reinit(fem_space,i,0);
 
+  // build the FEMSpace initial data structure.
+  // build Dof and Dof Boundary Mark;
   fem_space.buildElement();
   fem_space.buildDof();
   fem_space.buildDofBoundaryMark();
@@ -63,6 +124,7 @@ int main(int argc, char * argv[])
   stiff_matrix.algebricAccuracy() = 4;
   stiff_matrix.build();
 
+  // initialize a function to approximate the original function;
   FEMFunction<double,2> solution(fem_space);
   Vector<double> right_hand_side;
   Operator::L2Discretize(&f, fem_space, right_hand_side, 4);
@@ -206,15 +268,56 @@ int main(int argc, char * argv[])
           }
   }
   err2=err2/max2;
+
   std::cout<<"The error between sol3 and the solution::::"<<err2<<std::endl;
+
+  double testError=0;
+
+  FEMSpace<double, 2>& fem = solution.femSpace();
+  FEMSpace<double, 2>::ElementIterator the_element = fem.beginElement();
+  FEMSpace<double, 2>::ElementIterator end_element = fem.endElement();
+  
+  int flag=0;
+  for (;the_element != end_element;the_element ++) {
+        double volume = the_element->templateElement().volume();
+	//std::cout<<"volume is ::"<<volume<<"\n";
+        const QuadratureInfo<2>& quad_info = the_element->findQuadratureInfo(3);
+        std::vector<double> jacobian = the_element->local_to_global_jacobian(quad_info.quadraturePoint());
+        int n_quadrature_point = quad_info.n_quadraturePoint();
+        std::vector<double> f_value = solution.value(the_element->local_to_global(quad_info.quadraturePoint()), *the_element);
+        if (flag!=1) std::cout<<"n_quadrature_point::"<<n_quadrature_point<<"\n";
+	for (int l = 0;l < n_quadrature_point;l ++) {
+		if(flag!=1)
+		{
+			std::cout<<"q_point[l]:"<<the_element->local_to_global(quad_info.quadraturePoint())[0]<<"\n";
+			std::cout<<"q_point[l].size:"<<the_element->local_to_global(quad_info.quadraturePoint()).size()<<"\n";
+			std::cout<<"u[q_point[l]]:"<<FunctionFunction<double>(&u).value(the_element->local_to_global(quad_info.quadraturePoint())[l])<<"\n";
+			std::cout<<"f_value[l]"<<f_value[l]<<"\n";
+			std::cout<<"l::"<<l<<"\n";
+		}	
+		double df_value = FunctionFunction<double>(&u).value(the_element->local_to_global(quad_info.quadraturePoint())[l]) - f_value[l];
+                
+	       	df_value = fabs(df_value);
+        
+	      	if (df_value > testError) testError = df_value;
+        }
+	
+	flag=1;
+  }
+
 
 
   solution.writeOpenDXData("u.dx");
+//  double testerr = EditError(solution, FunctionFunction<double>(&u),3);
+//  it is useless to add the Functional namespace function into this 
   double error = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
+  double error2 = Functional::L0Error(solution, FunctionFunction<double>(&u), 3);
+
   // L2Error is defined in Functional.h and .template.h; The FunctionFunction is
   // defined in Miscellaneous.h; 
   // L2Error(FEMFunction<value_type, DIM>& f, const Function<value_type>& f1, int algebric_accuracy)
   std::cerr << "\nL2 error = " << error << std::endl;
+  std::cerr << "\nL0 error = " << error2 << std::endl;
 
 
   // Have a test in FunctionFunction<double>(&u);i

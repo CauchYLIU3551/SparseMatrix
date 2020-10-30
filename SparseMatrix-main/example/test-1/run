@@ -1,6 +1,6 @@
 #! /bin/sh
 
-export AFEPACK_PATH="/home/cyliu/AFEPack"
+export AFEPACK_PATH="~/AFEPack"
 export AFEPACK_TEMPLATE_PATH="$AFEPACK_PATH/template/triangle"
 
 exec ./main $*
