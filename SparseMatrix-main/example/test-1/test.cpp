@@ -210,7 +210,6 @@ int main(int argc, char * argv[])
   //sol2.writeOpenDXData("u2.dx");
   CGsolver solve_3(A);
   sol3=solve_3.solve(sol3,b,1.0e-08);
-  
 
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
@@ -272,7 +271,7 @@ int main(int argc, char * argv[])
   std::cout<<"The error between sol3 and the solution::::"<<err2<<std::endl;
 
   double testError=0;
-
+/*
   FEMSpace<double, 2>& fem = solution.femSpace();
   FEMSpace<double, 2>::ElementIterator the_element = fem.beginElement();
   FEMSpace<double, 2>::ElementIterator end_element = fem.endElement();
@@ -305,7 +304,7 @@ int main(int argc, char * argv[])
 	flag=1;
   }
 
-
+*/
 
   solution.writeOpenDXData("u.dx");
 //  double testerr = EditError(solution, FunctionFunction<double>(&u),3);
@@ -317,8 +316,16 @@ int main(int argc, char * argv[])
   // defined in Miscellaneous.h; 
   // L2Error(FEMFunction<value_type, DIM>& f, const Function<value_type>& f1, int algebric_accuracy)
   std::cerr << "\nL2 error = " << error << std::endl;
-  std::cerr << "\nL0 error = " << error2 << std::endl;
 
+  for(int k=0;k<solution.size();k++)
+  {
+          solution[k]=sol3[k];
+  }
+  
+  error2 = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
+
+  std::cerr << "\nL2 error of CGsoler= " << error2 << std::endl;
+  
 
   // Have a test in FunctionFunction<double>(&u);i
   //
