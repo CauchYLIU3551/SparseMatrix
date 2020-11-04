@@ -2,6 +2,8 @@
 #ifndef _sparsematrix_h_
 #define _sparsematrix_h_
 
+#include<sparse/sparsity_pattern.h>
+
 #include<iostream>
 #include<cstdio>
 #include<stdio.h>
@@ -38,8 +40,15 @@ public:
 	//std::vector<int> rowoffset;
 	//std::vector<int> indice;
 	//std::vector<double> value;
+	
+	int n();// return the number of rows;
+	int m();// return the number of cols;
+	int get_row_length(int r);
+	int n_nonzero_elements();
+	//sparsitypattern get_sparsity_pattern();
 
 private:
+	SparsityPattern pattern;
 	std::vector<int> rowoffset;
 	std::vector<int> indice;
 	std::vector<double> value;

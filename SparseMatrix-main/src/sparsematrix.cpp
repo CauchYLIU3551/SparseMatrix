@@ -400,3 +400,23 @@ int sparsematrix::show_row()
 {
 	return row;
 }
+
+int sparsematrix::n()
+{
+	return row;
+}
+
+int sparsematrix::m()
+{
+	return col;
+}
+
+int sparsematrix::get_row_length(int r)
+{
+	return rowoffset[r]-rowoffset[r-1];
+}
+
+int sparsematrix::n_nonzero_elements()
+{
+	return rowoffset[row];
+}

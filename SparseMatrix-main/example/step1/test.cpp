@@ -36,6 +36,11 @@ int main()
     v = { 10,-2,3,9,3,7,8,7,3,8,7,5,8,9,9,13,4,2,-1 };
     sparsematrix A(n, c, v);
 
+    C.showmatrix();
+    std::cout<<C.n()<<"\n";
+    std::cout<<C.m()<<"\n";
+    std::cout<<C.get_row_length(1)<<"\n";
+    std::cout<<C.n_nonzero_elements()<<"\n";
     /*
     A.showmatrix();
     A.show_indice();
@@ -112,7 +117,7 @@ int main()
     //x.swap(sol.solve(x2, b, 0.0001));
 
     
-    n = { 0,2,5,7 };
+/*    n = { 0,2,5,7 };
     c = { 0,1,0,1,2,1,2 };
     v = { 2,-1,-1,2,-1,-1,2 };
     sparsematrix E(n, c, v);
@@ -126,6 +131,7 @@ int main()
         std::cout << x0[i] << " ";
     }
     std::cout << std::endl;
+*/
 
     /*CGsolver sol2(E);
     x0 = sol2.solve(x0, b, 0.001);
