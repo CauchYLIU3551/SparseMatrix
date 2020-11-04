@@ -4,11 +4,11 @@
 //#include<sparse/sparsematrix.h>
 #include<vector>
 
-class SparsityPattern
+class Sparsitypattern
 {
 public:
-	SparsityPattern();
-	SparsityPattern(int m, int n);
+	Sparsitypattern();
+	Sparsitypattern(int m, int n);
 
 private:
 	//int max_dim;

@@ -25,9 +25,9 @@ SparsityPattern::SparsityPattern(int m,
 }
 */
 
-SparsityPattern::SparsityPattern():rows(0),cols(0)
+Sparsitypattern::Sparsitypattern():rows(0),cols(0)
 {}
 
-SparsityPattern::SparsityPattern(int m, int n):rows(m),cols(n)
+Sparsitypattern::Sparsitypattern(int m, int n):rows(m),cols(n)
 {}
 

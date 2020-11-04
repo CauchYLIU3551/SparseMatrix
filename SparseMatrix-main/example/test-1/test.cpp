@@ -31,12 +31,6 @@
 #include <lac/sparsity_pattern.h>
 #include <lac/sparse_matrix.h>
 
-#include "AMGSolver.h"
-#include "Geometry.h"
-#include "TemplateElement.h"
-#include "FEMSpace.h"
-#include "HGeometry.h"
-#include "BilinearOperator.h"
 
 
 
@@ -173,8 +167,8 @@ int main(int argc, char * argv[])
 
   //std::cout<<"The last element of row:::"<<row[row.size()-1]<<"\n"; 
   //std::cout<<"This is the rowlen of the 1st row"<<stiff_matrix.get_row_length(0)<<"\n";
-  //std::ofstream out ("sparsity_pattern.1");
-  //sparse.print_gnuplot (out);
+  std::ofstream out ("sparsity_pattern.1");
+  sparse.print_gnuplot (out);
   //std::ofstream out ("sparsity_pattern.2");
   //sparse.print (out);
   

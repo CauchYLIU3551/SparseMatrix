@@ -48,7 +48,7 @@ public:
 	//sparsitypattern get_sparsity_pattern();
 
 private:
-	SparsityPattern pattern;
+//	SparsityPattern pattern;
 	std::vector<int> rowoffset;
 	std::vector<int> indice;
 	std::vector<double> value;
