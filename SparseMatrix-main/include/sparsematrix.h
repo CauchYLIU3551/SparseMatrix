@@ -32,9 +32,11 @@ public:
 	static sparsematrix add(sparsematrix A, sparsematrix B);
 	std::vector<double> multiply(std::vector<double> x);
 	void showmatrix();
-	std::vector<int> show_offset();
-	std::vector<int> show_indice();
-	std::vector<double> show_value();
+	std::vector<int> get_offset();
+	std::vector<int> get_indice();
+	std::vector<double> get_value();
+
+	std::vector<double> get_diag();
 
 	int show_row();
 	//std::vector<int> rowoffset;

@@ -365,35 +365,63 @@ int sparsematrix::max()
 	return num + 1;
 };
 
-std::vector<int> sparsematrix::show_offset()
+std::vector<int> sparsematrix::get_offset()
 {
+	/*
 	for (int i = 0; i < rowoffset.size(); i++)
 	{
 		std::cout << rowoffset[i] << " ";
 	}
 	std::cout << std::endl;
+	*/
 	return rowoffset;
 }
 
-std::vector<int> sparsematrix::show_indice()
+std::vector<int> sparsematrix::get_indice()
 {
+	/*
 	for (int i = 0; i < indice.size(); i++)
 	{
 		std::cout << indice[i] << " ";
 	}
 	std::cout << std::endl;
-
+	*/
 	return indice;
 }
 
-std::vector<double> sparsematrix::show_value()
+std::vector<double> sparsematrix::get_value()
 {
+	/*
 	for (int i = 0; i < value.size(); i++)
 	{
 		std::cout << value[i] << " ";
 	}
 	std::cout << std::endl;
+	*/
 	return value;
+}
+
+std::vector<double> sparsematrix::get_diag()
+{
+	if(row==col)
+	{
+		std::vector<double> D;
+		for(int i=0;i<row;i++)
+		{
+			for(int j=rowoffset[i];j<rowoffset[i+1];j++)
+			{
+				if(i==indice[j])
+				{
+					D.push_back(value[j]);
+				}
+			}
+		}
+		return D;
+	}
+	else
+	{
+		std::cout << "Function get_diag() ERROR:The matrix is not square matrix! Please check it!\n";
+	}
 }
 
 int sparsematrix::show_row()

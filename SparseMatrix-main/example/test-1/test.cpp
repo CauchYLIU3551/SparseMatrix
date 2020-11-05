@@ -119,15 +119,24 @@ int main(int argc, char * argv[])
   stiff_matrix.build();
 
   // initialize a function to approximate the original function;
-  FEMFunction<double,2> solution(fem_space);
-  Vector<double> right_hand_side;
-  Operator::L2Discretize(&f, fem_space, right_hand_side, 4);
+  FEMFunction<double,2> solution(fem_space), testsolution(fem_space);
+  // using the testsolution to compute the error and output some image to help
+  // understanding the AMGsolve
+  
+  Vector<double> right_hand_side, right2;
+  // right2 is serve for testsolution;
 
+  Operator::L2Discretize(&f, fem_space, right_hand_side, 4);
+  Operator::L2Discretize(&f, fem_space, right2, 4);
+  
   BoundaryFunction<double,2> boundary(BoundaryConditionInfo::DIRICHLET, 1, &u);
   BoundaryConditionAdmin<double,2> boundary_admin(fem_space);
   boundary_admin.add(boundary);
   boundary_admin.apply(stiff_matrix, solution, right_hand_side);
-
+  // to apply testsolution 
+  boundary_admin.apply(stiff_matrix, testsolution, right2);
+  
+  /*
   std::cout<<"this is the info of the stiff matrix\n";
   std::cout<<stiff_matrix.n()<<"\n";
   std::cout<<stiff_matrix.m()<<"\n";
@@ -141,7 +150,9 @@ int main(int argc, char * argv[])
   std::cout<<i->column()<<"\n";
   std::cout<<i->value()<<"\n";
   std::cout<<"Finish the output of the info!\n";
+*/
 
+  SparseMatrixIterators::Iterator<double,true> i=stiff_matrix.begin();
   const SparseMatrixIterators::Iterator<double,true> e=stiff_matrix.end();
   
   std::vector<int> row(stiff_matrix.n()+1),col;
@@ -165,17 +176,19 @@ int main(int argc, char * argv[])
   }
   sparsematrix A(row,col,val);
 
+  // output the sparsity pattern of the stiff_matrix;
+  //
   //std::cout<<"The last element of row:::"<<row[row.size()-1]<<"\n"; 
   //std::cout<<"This is the rowlen of the 1st row"<<stiff_matrix.get_row_length(0)<<"\n";
-  std::ofstream out ("sparsity_pattern.1");
-  sparse.print_gnuplot (out);
+  //std::ofstream out ("sparsity_pattern.1");
+  //sparse.print_gnuplot (out);
   //std::ofstream out ("sparsity_pattern.2");
   //sparse.print (out);
   
   /////////////
   //following are the process to solve the equations!
-  jacobisolver solve_2(A);
-  std::vector<double> sol2,sol3,b;
+  jacobisolver solve_2(A), solve_GS(A);
+  std::vector<double> sol2,sol3,sol4,b;
   // here are commands to copy the elements from solution and right** to sol2
   // and b;
   
@@ -183,6 +196,7 @@ int main(int argc, char * argv[])
   {
 	  sol2.push_back(solution[k]);
 	  sol3.push_back(solution[k]);
+	  sol4.push_back(solution[k]);
 	  b.push_back(right_hand_side[k]);
   }
 
@@ -200,10 +214,32 @@ int main(int argc, char * argv[])
 
   //std::ofstream out("right_hand_side");
   //right_hand_side.print(out);
+  
+  // test my DIY Solver and check the result:::
+  //
+  //
   sol2=solve_2.solve(sol2,b,1.0e-08);
   //sol2.writeOpenDXData("u2.dx");
   CGsolver solve_3(A);
   sol3=solve_3.solve(sol3,b,1.0e-08);
+
+  sol4=solve_GS.GaussSeidel(sol4,b,1.0e-08,10);
+  for(int k=0;k<solution.size();k++)
+  {
+          testsolution[k]=sol4[k];
+  }
+
+  double err34=0;
+  for(int i=0;i<sol4.size();i++)
+  {
+	  if(err34<abs(sol4[i]-sol3[i]))
+	  {
+		  err34=abs(sol4[i]-sol3[i]);
+	  }
+  }	  
+  std::cout<<"error between GS and CG:"<<err34<<"\n";
+  
+  testsolution.writeOpenDXData("GS.dx");
 
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
@@ -233,7 +269,9 @@ int main(int argc, char * argv[])
   
   // The class FunctionFunction is defined in Miscellaneous.h
 
-  double err=0,max=0;
+  // Following steps are compute the infinite error between the sol2 sol3 and
+  // the solution;
+/*  double err=0,max=0;
   for(int k=0;k<sol2.size();k++)
   {
 	  if(err<abs(sol2[k]-solution[k]))
@@ -263,6 +301,7 @@ int main(int argc, char * argv[])
   err2=err2/max2;
 
   std::cout<<"The error between sol3 and the solution::::"<<err2<<std::endl;
+*/;
 
   double testError=0;
 /*
