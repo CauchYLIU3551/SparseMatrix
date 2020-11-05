@@ -15,7 +15,55 @@ jacobisolver::jacobisolver()
 
 jacobisolver::jacobisolver(matrix a) :A(a) {}
 
-void jacobisolver::GaussSidel() {}
+std::vector<double> jacobisolver::GaussSeidel(std::vector<double>x,std::vector<double> b, double eps, int num) 
+{
+	std::vector<double> D,value;
+	D=A.get_diag();
+	std::vector<int>offset,indice;
+	offset=A.get_offset();
+	indice=A.get_indice();
+	value=A.get_value();
+
+        //sparsematrix M = sparsematrix::add(L, U);
+        //M = M.inverse_num(); //get the -(L+U) to compute the iteration Matrix;
+
+        //M.showmatrix();
+
+        int row = A.m();
+        std::vector<double> x0;
+	
+	int N=0;
+        do
+        {
+		for(int i=0;i<row;i++)
+		{
+			double tmp=0;
+			//COMPUTE TMP1 TMP2;
+			for (int j=offset[i];j<offset[i+1];j++)
+			{
+				if(i!=indice[j])
+				{
+					tmp+=value[j]*x[indice[j]];
+				}
+			}
+			x[i]=(b[i]-tmp)/D[i];
+		}
+		N++;
+                //x0=x;
+                //x = vector_add(DI.multiply(M.multiply(x0)), DI.multiply(b));
+        } while (N<num);
+
+
+
+//      std::cout << "The answer is that:::\n";
+//      for (int i = 0; i < x.size(); i++)
+//      {
+//              std::cout << x[i] << " ";
+//      }
+//      std::cout << "\n";
+        return x;
+
+}
 
 double frobenis(std::vector<double> a, std::vector<double>b)
 {

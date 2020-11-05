@@ -14,7 +14,8 @@ public:
 	jacobisolver();//default constructor;
 	jacobisolver(matrix a);
 	std::vector<double> solve(std::vector<double>x,std::vector<double> b, double eps);
-	void GaussSidel();// unfinished function and it will be completed at next step.
+	std::vector<double> GaussSeidel(std::vector<double>x,std::vector<double> b, double eps, int num=10);
+	// GaussSidel Solver and the default iteration number=10.
 private:
 	matrix A;
 	//double eps;

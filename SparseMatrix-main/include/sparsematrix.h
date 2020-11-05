@@ -2,6 +2,8 @@
 #ifndef _sparsematrix_h_
 #define _sparsematrix_h_
 
+#include<sparse/sparsity_pattern.h>
+
 #include<iostream>
 #include<cstdio>
 #include<stdio.h>
@@ -30,16 +32,25 @@ public:
 	static sparsematrix add(sparsematrix A, sparsematrix B);
 	std::vector<double> multiply(std::vector<double> x);
 	void showmatrix();
-	std::vector<int> show_offset();
-	std::vector<int> show_indice();
-	std::vector<double> show_value();
+	std::vector<int> get_offset();
+	std::vector<int> get_indice();
+	std::vector<double> get_value();
+
+	std::vector<double> get_diag();
 
 	int show_row();
 	//std::vector<int> rowoffset;
 	//std::vector<int> indice;
 	//std::vector<double> value;
+	
+	int n();// return the number of rows;
+	int m();// return the number of cols;
+	int get_row_length(int r);
+	int n_nonzero_elements();
+	//sparsitypattern get_sparsity_pattern();
 
 private:
+//	SparsityPattern pattern;
 	std::vector<int> rowoffset;
 	std::vector<int> indice;
 	std::vector<double> value;
