@@ -223,6 +223,40 @@ int main(int argc, char * argv[])
   CGsolver solve_3(A);
   sol3=solve_3.solve(sol3,b,1.0e-08);
 
+  int num1=0;
+  std::vector<double> errorn;
+
+  while(num1<1000)
+  {
+	en1=en;
+	sol4=solve_GS.GaussSeidel(sol4,b,1.0e-08,10);
+  	for(int k=0;k<solution.size();k++)
+  	{
+        	  testsolution[k]=sol4[k];
+  	}
+
+  	double err34=0;
+  	for(int i=0;i<sol4.size();i++)
+  	{
+        	if(err34<abs(sol4[i]-sol3[i]))
+        	{
+                	err34=abs(sol4[i]-sol3[i]);
+        	}
+  	}
+  	std::cout<<"error between GS and CG:"<<err34<<"\n";
+	errorn.push_back(Functional::L2Error(testsolution, FunctionFunction<double>(&u), 3));
+  	testsolution.writeOpenDXData("GS.dx");
+	num1+=200;
+  }
+  double order=0;
+  for(int i=1;i<errorn.size()-1;i++)
+  {
+	  order=log(errorn[i+1]/errorn[i])/log(errorn[i]/errorn[i-1]);
+	  std::cout<<"The order in "<<i*200<<" is ::"<<order<<"\n";
+  }
+
+
+  /*
   sol4=solve_GS.GaussSeidel(sol4,b,1.0e-08,10);
   for(int k=0;k<solution.size();k++)
   {
@@ -240,6 +274,7 @@ int main(int argc, char * argv[])
   std::cout<<"error between GS and CG:"<<err34<<"\n";
   
   testsolution.writeOpenDXData("GS.dx");
+*/
 
   AMGSolver solver(stiff_matrix);
   solver.solve(solution, right_hand_side, 1.0e-08, 200);	
