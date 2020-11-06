@@ -43,9 +43,9 @@ std::vector<double> vector_add2(std::vector<double> a, std::vector<double>b)
 		std::vector<double> c(len);
 		for (int i = 0; i < a.size(); i++)
 		{
-			c[i] = a[i] + b[i];
+			a[i] = a[i] + b[i];
 		}
-		return c;
+		return a;
 	}
 }
 

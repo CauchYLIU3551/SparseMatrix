@@ -1,5 +1,5 @@
 //
-// time: Fri Nov  6 16:05:19 2020
+// time: Fri Nov  6 16:27:11 2020
 //
 // version: 3.2.0 (format), 4.4.4 (DX)
 //
@@ -64,7 +64,7 @@ main_AutoColor_1_out_2 =
     // input[6]: defaulting = 0, visible = 0, type = 8, value = [5.79224 -1.69161 2.23542]
     // input[7]: defaulting = 0, visible = 0, type = 5, value = 3.29526
     // input[8]: defaulting = 0, visible = 0, type = 1, value = 1212
-    // input[9]: defaulting = 0, visible = 0, type = 5, value = 0.572
+    // input[9]: defaulting = 0, visible = 0, type = 5, value = 0.572195
     // input[10]: defaulting = 0, visible = 0, type = 8, value = [-0.336055 0.138883 0.931546]
     // input[11]: defaulting = 1, visible = 0, type = 5, value = 30.0002
     // input[12]: defaulting = 0, visible = 0, type = 1, value = 0
@@ -73,7 +73,7 @@ main_AutoColor_1_out_2 =
     // input[16]: defaulting = 1, visible = 0, type = 32, value = "none"
     // input[17]: defaulting = 1, visible = 0, type = 1, value = 1
     // input[18]: defaulting = 1, visible = 0, type = 1, value = 1
-    // input[19]: defaulting = 0, visible = 0, type = 1, value = 0
+    // input[19]: defaulting = 0, visible = 0, type = 3, value = 0
     // input[29]: defaulting = 0, visible = 0, type = 3, value = 1
     // input[33]: defaulting = 0, visible = 0, type = 3, value = 1
     // input[39]: defaulting = 0, visible = 0, type = 5, value = 0.5
@@ -479,7 +479,7 @@ main_Image_1_in_5 = [0.5 0.5 -0.000496417];
 main_Image_1_in_6 = [5.79224 -1.69161 2.23542];
 main_Image_1_in_7 = 3.29526;
 main_Image_1_in_8 = 1212;
-main_Image_1_in_9 = 0.572;
+main_Image_1_in_9 = 0.572195;
 main_Image_1_in_10 = [-0.336055 0.138883 0.931546];
 main_Image_1_in_11 = NULL;
 main_Image_1_in_12 = 0;

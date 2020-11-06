@@ -15,6 +15,26 @@ jacobisolver::jacobisolver()
 
 jacobisolver::jacobisolver(matrix a) :A(a) {}
 
+double frobenis(std::vector<double> a, std::vector<double>b)
+{
+        if (a.size() != b.size())
+        {
+                std::cout << "The two vector are not in the same dimension! Please check it!\n";
+        }
+        else
+        {
+                double F = 0;
+                int len = a.size();
+                for (int i = 0; i < len; i++)
+                {
+                        F += pow(a[i] - b[i], 2);
+                }
+                F = sqrt(F);
+                return F;
+        }
+}
+
+
 std::vector<double> jacobisolver::GaussSeidel(std::vector<double>x,std::vector<double> b, double eps, int num) 
 {
 	std::vector<double> D,value;
@@ -35,6 +55,7 @@ std::vector<double> jacobisolver::GaussSeidel(std::vector<double>x,std::vector<d
 	int N=0;
         do
         {
+		x0=x;
 		for(int i=0;i<row;i++)
 		{
 			double tmp=0;
@@ -51,7 +72,7 @@ std::vector<double> jacobisolver::GaussSeidel(std::vector<double>x,std::vector<d
 		N++;
                 //x0=x;
                 //x = vector_add(DI.multiply(M.multiply(x0)), DI.multiply(b));
-        } while (N<num);
+        } while (N<num&&frobenis(x0,x)>eps);
 
 
 
@@ -65,24 +86,6 @@ std::vector<double> jacobisolver::GaussSeidel(std::vector<double>x,std::vector<d
 
 }
 
-double frobenis(std::vector<double> a, std::vector<double>b)
-{
-	if (a.size() != b.size())
-	{
-		std::cout << "The two vector are not in the same dimension! Please check it!\n";
-	}
-	else
-	{
-		double F = 0;
-		int len = a.size();
-		for (int i = 0; i < len; i++)
-		{
-			F += pow(a[i] - b[i], 2);
-		}
-		F = sqrt(F);
-		return F;
-	}
-}
 
 std::vector<double> vector_add(std::vector<double> a, std::vector<double> b)
 {

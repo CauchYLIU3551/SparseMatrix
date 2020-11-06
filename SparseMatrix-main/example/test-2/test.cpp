@@ -67,7 +67,7 @@ value_type EditError(FEMFunction<value_type, DIM>& f, const Function<value_type>
 };
 */
 
-clock_t start,end,start2,end2;
+clock_t start, end, start2, end2, start3, end3;
 
 int main(int argc, char * argv[])
 {
@@ -222,52 +222,67 @@ int main(int argc, char * argv[])
   sol2=solve_2.solve(sol2,b,1.0e-08);
   //sol2.writeOpenDXData("u2.dx");
   CGsolver solve_3(A);
+  
+  //get the computing time of CG method;
+  start3=clock();
+  
   sol3=solve_3.solve(sol3,b,1.0e-08);
+  
+  end3=clock();
+  double endtime3=(double)(end3-start3)/CLOCKS_PER_SEC;
+
 
   int numtmp=10;
   std::vector<double> errorn;
-/*
-  while(numtmp<1000)
+
+
+  /*
+  // to compute the order of convergence of GS order;
+  while(numtmp<100)
   {
 	sol5=solve_GS.GaussSeidel(sol4,b,1.0e-08,numtmp);
   	for(int k=0;k<solution.size();k++)
   	{
         	  testsolution[k]=sol5[k];
   	}
-
-  	double err34=0;
-  	for(int i=0;i<sol5.size();i++)
-  	{
-        	if(err34<abs(sol5[i]-sol3[i]))
-        	{
-                	err34=abs(sol5[i]-sol3[i]);
-        	}
-  	}
-  	std::cout<<"error between GS and CG:"<<err34<<"\n";
 	errorn.push_back(Functional::L2Error(testsolution, FunctionFunction<double>(&u), 3));
-	
-  //	testsolution.writeOpenDXData("GS.dx");
-	numtmp*=2;
+	numtmp+=1;
   }
-
   double order=0;
-  for(int i=1;i<errorn.size()-1;i++)
+  for(int i=20;i<25;i++)
   {
-	  order=(errorn[i+1]-errorn[i])/(errorn[i]-errorn[i-1]);
-	  std::cout<<"The order in "<<pow(2,i)*10<<" is ::"<<order<<"\n";
+	  order=log(errorn[i+1]/errorn[i])/log(errorn[i]/errorn[i-1]);
+	  std::cout<<"The order of GS is ::"<<order<<"\n";
   }
-  std::cout<<"The L2error of GS method is::"<<errorn[errorn.size()-1]<<"\n";
+// to compute the order of convergence of CG method;
+  while(numtmp<100)
+  {
+        sol5=solve_3.solve(sol4,b,1.0e-08);
+        for(int k=0;k<solution.size();k++)
+        {
+                  testsolution[k]=sol5[k];
+        }
+        errorn.push_back(Functional::L2Error(testsolution, FunctionFunction<double>(&u), 3));
+        numtmp+=1;
+  }
+  for(int i=20;i<25;i++)
+  {
+          order=log(errorn[i+1]/errorn[i])/log(errorn[i]/errorn[i-1]);
+          std::cout<<"The order of CG is ::"<<order<<"\n";
+  }
 */
 
-  start=clock();
+  // to compute the rate of convergence of CG method should edit in the 
+  // CG function! instead of in this main function. Because CG just give 
+  // back the final result without any mid-process result!
 
+  start=clock();  
+  
   sol4=solve_GS.GaussSeidel(sol4,b,1.0e-08,200);
-
+  
   end=clock();
   double endtime=(double)(end-start)/CLOCKS_PER_SEC;
-  std::cout<<"The computing time of GS method is :::"<<1000*endtime<<" ms \n";
-
-  
+//  std::cout<<"The computing time of GS method is :::"<<1000*endtime<<" ms \n";
 
   for(int k=0;k<solution.size();k++)
   {
@@ -275,26 +290,24 @@ int main(int argc, char * argv[])
   }
 
   double err34=0;
-  for(int i=0;i<sol4.size();i++)
-  {
-	  if(err34<abs(sol4[i]-sol3[i]))
-	  {
-		  err34=abs(sol4[i]-sol3[i]);
-	  }
-  }	  
+  err34=Functional::L2Error(testsolution, FunctionFunction<double>(&u), 3);
+  testsolution.writeOpenDXData("GS.dx");
+
+
   
-  testsolution.writeOpenDXData("GS_20.dx");
-
-
   AMGSolver solver(stiff_matrix);
-  //solver.solve(solution, right_hand_side, 1.0e-08, 200);	
+  
   start2=clock();
-
-  solver.solve(solution, right_hand_side, 1.0e-08, 200);
-
+  
+  solver.solve(solution, right_hand_side, 1.0e-08, 200);	
+  
   end2=clock();
-  endtime=(double)(end2-start2)/CLOCKS_PER_SEC;
-  std::cout<<"The computing time of AMG method is :::"<<1000*endtime<<" ms \n";
+  double endtime2=(double)(end2-start2)/CLOCKS_PER_SEC;
+//  std::cout<<"The computing time of AMG method is :::"<<1000*endtime<<" ms \n";
+
+//  std::cout<<"The computing time of GS method is :::"<<1000*endtime<<" ms \n";
+
+
 
 
   /*
@@ -410,8 +423,12 @@ int main(int argc, char * argv[])
   
   error2 = Functional::L2Error(solution, FunctionFunction<double>(&u), 3);
 
-  std::cerr << "\nL2 error of CGsoler= " << error2 << std::endl;
+  std::cout<<"L2 error of GS method is :"<<err34<<"\n";
+  std::cerr << "\nL2 error of CGsolver= " << error2 << std::endl;
   
+  std::cout<<"The computing time of AMG method is :::"<<1000*endtime2<<" ms \n";
+  std::cout<<"The computing time of GS method is :::"<<1000*endtime<<" ms \n";
+ // std::cout<<"The computing time of CG method is :::"<<1000*endtime3<<" ms \n";
 
   // Have a test in FunctionFunction<double>(&u);i
   //
@@ -443,12 +460,12 @@ int main(int argc, char * argv[])
 
 double u(const double * p)
 {
-  return sin(PI*p[0]) * sin(2*PI*p[1]);
+  return sin(10*PI*p[0]) * sin(20*PI*p[1]);
 };
 
 double f(const double * p)
 {
-  return 5*PI*PI*u(p);
+  return 500*PI*PI*u(p);
 };
 
 //
